@@ -1,0 +1,24 @@
+@font-face {
+    font-family: 'play_regular';
+    src: url('../fonts/Play-Regular.ttf');
+  }
+  @font-face {
+    font-family: 'poppins_regular';
+    src: url('../fonts/Poppins-Regular.ttf');
+  }
+  body{
+    font-family:  'play_regular', sans-serif !important;  
+    font-size: small;
+  }
+  hr.dotted {
+    border-top: 2px dotted #999;
+}
+  .alert-ajax{
+    position: absolute !important;
+    width: 100%;
+  }
+  .table td, .table th{
+    padding: 0.3rem;
+  }
+
+  
