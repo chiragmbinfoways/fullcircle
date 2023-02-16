@@ -29,7 +29,13 @@ class CustomerController extends Controller
     {
         $hasPermission = hasPermission('services', 1);
         if ($hasPermission) {
-            return view('jpanel.customer.customerAdd');
+             $last_customer = customer::orderBy('customer_id', 'DESC')->first();
+            if ($last_customer) {
+                $last = $last_customer->customer_id + 1;
+            } else {
+                $last = '1001';
+            }
+            return view('jpanel.customer.customerAdd')->with(['last'=>$last]);
         } else {
             abort(403);
         }
@@ -51,6 +57,7 @@ class CustomerController extends Controller
             'gender' => 'required',
         ]);
         $customer = new customer();
+        $customer->customer_id = $request->cus_id;
         $customer->fname = $request->fname;
         $customer->lname = $request->lname;
         $customer->email = $request->email;
@@ -62,6 +69,8 @@ class CustomerController extends Controller
         $customer->address2 = $request->address2;
         $customer->zipcode = $request->zipcode;
         $customer->gender = $request->gender;
+        $customer->remarks = $request->remarks;
+
         $customer->save();
         if ($customer) {
             return redirect('jpanel/customer/list')->with('success', 'Customer has been created successfully!');
@@ -104,6 +113,7 @@ class CustomerController extends Controller
     public function update(Request $request)
     {
         $request->validate([
+            'cus_id' => 'required',
             'fname' => 'required',
             'lname' => 'required',
             'email' => 'required|email',
@@ -118,6 +128,7 @@ class CustomerController extends Controller
         ]);
 
         $custmor = customer::where('id', $request->id)->update([
+            'customer_id' => $request->cus_id,
             'fname' => $request->fname,
             'lname' => $request->lname,
             'email' => $request->email,
@@ -129,6 +140,7 @@ class CustomerController extends Controller
             'address2' => $request->address2,
             'zipcode' => $request->zipcode,
             'gender' => $request->gender,
+            'remarks' => $request->remarks,
         ]);
         if ($custmor) {
             return redirect('jpanel/customer/edit/' . $request->id)->with('success', 'Customer has been updated!');
@@ -140,7 +152,7 @@ class CustomerController extends Controller
     {
         $hasPermission = hasPermission('customer', 2);
         if ($hasPermission) {
-            $packages = package::all();
+            $branches = branch::all();
             $name = customer::where('id', $id)->get()->first();
             $customerpackages = customerPackage::where('customer_id', $id)->orderBy('id','desc')->get();
             $allAppointments= [];
@@ -152,7 +164,7 @@ class CustomerController extends Controller
                     }
                 } 
             }
-            return view('jpanel.customer.customerPackage', compact('packages', 'name', 'customerpackages','allAppointments'));
+            return view('jpanel.customer.customerPackage', compact('name', 'customerpackages','allAppointments','branches'));
         } 
         else {
             abort(404);
@@ -203,5 +215,21 @@ class CustomerController extends Controller
         $bookingWorkStatus->save();
         $customerPackage->save();
         return response()->json(['status' => 'success', 'message' => 'Status has been changed successfully!']);
+    }
+    public function extraPackage(Request $request,$id)
+    {
+        $extraAppointment = new customerAppointment();
+        $extraAppointment->booking_id = '-';
+        $extraAppointment->customerPack_id = $id;
+        $extraAppointment->Appointment_date = '-';
+        $extraAppointment->time = '-';
+        $extraAppointment->Trainer = '-';
+        $extraAppointment->save();
+        return redirect()->back();
+    }
+    public function branchPackages(Request $request)
+    {
+        $packages = package::where('branch',$request->id)->get();
+        return response()->json($packages);
     }
 }

@@ -11,4 +11,7 @@ class package extends Model
     public function services(){
         return $this->hasOne(services::class,'id','service');
     }
+    public function branches(){
+        return $this->hasOne(branch::class,'id','branch');
+    }
 }

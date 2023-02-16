@@ -13,5 +13,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/dashboard/booking/edit/{id}', [DashboardController::class,'edit'])->name('edit.booking.dashboard');
     Route::post('/dashboard/booking/update/{id}', [DashboardController::class,'update'])->name('update.booking.employee'); // update page post request
     Route::post('/booking/delete/dashboard', [DashboardController::class,'delete'])->name('delete.booking.dashboard');
-    Route::post('/booking/update/dashboard', [DashboardController::class,'dragUpdate'])->name('dragupdate.booking.dashboard'); // Drag Update 
+    Route::post('/booking/update/dashboard', [DashboardController::class,'dragUpdate'])->name('dragupdate.booking.dashboard'); // Drag Update
+    Route::post('/dashboard/booking/branch/filter', [DashboardController::class,'branchFilter'])->name('dashboard.branch.filter'); // Ajax request
+    Route::post('/dashboard/booking/employee/filter', [DashboardController::class,'employeeFilter'])->name('dashboard.employee.filter'); // Ajax request
+
 });

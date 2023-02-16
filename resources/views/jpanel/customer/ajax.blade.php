@@ -125,5 +125,31 @@
                 }
             });
         })
+
+         // packages Data
+         $('#branch').change(function() {
+             let id = $(this).val();
+            var package = $("#package");
+            package.empty();
+            let url = '{{ route('branch.packages') }}';
+            $.ajax({
+                url: url,
+                type: 'get',
+                data: {
+                    'id': id,
+                },
+                dataType: 'json',
+                success: function(response) {
+                    console.log(response);
+                    if (response != null) {
+                        package.append('<option value="" selected disabled>select package</option>')
+                        for (var i = 0; i < response.length; i++) {
+                            package.append('<option value="' + response[i].id + '">' +
+                                response[i].name + '</option>');
+                        }
+                    }
+                }
+            });
+        });
 })
 </script>

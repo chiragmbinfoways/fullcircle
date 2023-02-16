@@ -143,8 +143,6 @@
                                             <dl>
                                                 <dt class="text-muted">Customer Name</dt>
                                                 <dd id="title" class="fw-bold fs-4"></dd>
-                                                <dt class="text-muted">Package Type</dt>
-                                                <dd id="packageName" class=""></dd>
                                                 <dt class="text-muted">Start</dt>
                                                 <dd id="start" class=""></dd>
                                                 <dt class="text-muted">End</dt>
@@ -160,23 +158,41 @@
                                 </div>
                                 </div>
                             </div>
-
-                            <div class="col-md-12">
-                                <div class="card card-primary">
-                                    <div class="card-body p-0">
-                                        <!-- THE CALENDAR -->
-                                        <div id="calendar"></div>
-                                    </div>
-                                    <!-- /.card-body -->
-                                </div>
-                                <!-- /.card -->
+                            <div class="row">
+                                {{-- <div class="col-md-4"> --}}
+                                <form action="{{ route('dashboard.branch.filter') }}" method="post">
+                                    @csrf
+                                            <div class="form-group mr-2">
+                                                <label class="d-block">Branch Name:</label>
+                                                <select class="form-control  form-control-sm  emp" id="branchFilter" name="branchFilter" data-placeholder="Select branch" onchange="this.form.submit()">
+                                                <option value="" selected hidden>{{$branch_name}}</option>
+                                                @foreach ($branches as $branch )
+                                                <option value="{{$branch->id}}" >{{$branch->name}}</option>
+                                                @endforeach
+                                                </select>
+                                            </div>
+                                        {{-- </div> --}}
+                                </form>
+                                <form action="{{ route('dashboard.employee.filter') }}" method="post">
+                                    @csrf
+                                        {{-- <div class="col-md-4"> --}}
+                                            <div class="form-group">
+                                                <label class="d-block">Employee Name:</label>
+                                                <select class="form-control  form-control-sm  emp" id="employeeFilter" name="employeeFilter" data-placeholder="Select Employee" onchange="this.form.submit()">
+                                                <option value="" selected hidden>{{$employee_name}}</option>
+                                                <option value="All">All</option>
+                                                @foreach ($employees as $employee )
+                                                <option value="{{$employee->id}}" >{{$employee->fname}} {{$employee->lname}}</option>
+                                                @endforeach
+                                                </select>
+                                            </div>
+                                        {{-- </div> --}}
+                                </form>
                             </div>
+                        <!-- THE CALENDAR -->
+                            <div id="calendar"></div>
                         </div>
                         <!-- /.card-body -->
-                        <div class="card-footer">
-                            Footer
-                        </div>
-                        <!-- /.card-footer-->
                     </div>
                     <!-- /.card -->
                     {{-- @endif --}}

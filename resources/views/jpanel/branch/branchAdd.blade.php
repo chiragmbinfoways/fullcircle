@@ -85,11 +85,11 @@
                                             @endif
                                         </div>
                                     </div>
-                                     <div class="col-md-4">
+                                    <div class="col-md-4 d-none">
                                         <div class="form-group">
                                             <label for="title">Zipcode</label>
                                             <input type="text" class="form-control form-control-sm @error('zipcode') is-invalid @enderror " id="zipcode"
-                                                name="zipcode" placeholder="Enter Zipcode " max="7" value="{{old('zipcode')}}">
+                                                name="zipcode" placeholder="Enter Zipcode " value="123456" max="7" value="{{old('zipcode')}}">
                                                 @if ($errors->has('zipcode'))
                                                 <div class="text-danger">{{ $errors->first('zipcode') }}</div>
                                             @endif

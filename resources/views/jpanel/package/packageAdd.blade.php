@@ -82,11 +82,46 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
+                                            <label for="title">Select Branch </label>
+                                            <select class="select2 " name="branch"  style="width: 100%;" data-placeholder="Select branch" >
+                                                @foreach ($branches as $branch)
+                                                    <option value="{{ $branch->id }}">
+                                                        {{ $branch->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                                @if ($errors->has('branch'))
+                                                <div class="text-danger">{{ $errors->first('branch') }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
                                             <label for="title">Service Included (Times) </label>
                                             <input type="text" class="form-control form-control-sm @error('time') is-invalid @enderror " id="time"
                                                 name="time" placeholder="Enter Time " value="{{old('time')}}">
                                                 @if ($errors->has('time'))
                                                 <div class="text-danger">{{ $errors->first('time') }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="title">Opening Date </label>
+                                            <input type="date" class="form-control form-control-sm @error('oDate') is-invalid @enderror " id="oDate"
+                                                name="oDate" placeholder="Enter Date " value="{{old('oDate')}}">
+                                                @if ($errors->has('oDate'))
+                                                <div class="text-danger">{{ $errors->first('oDate') }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="title">Closing Date </label>
+                                            <input type="date" class="form-control form-control-sm @error('cDate') is-invalid @enderror " id="cDate"
+                                                name="cDate" placeholder="Enter Date " value="{{old('cDate')}}">
+                                                @if ($errors->has('cDate'))
+                                                <div class="text-danger">{{ $errors->first('cDate') }}</div>
                                             @endif
                                         </div>
                                     </div>

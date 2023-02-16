@@ -56,7 +56,6 @@
                                     <th>Branch Name</th>
                                     <th>Address</th>
                                     <th>City</th>
-                                    <th>Zipcode</th>
                                     <th>Number</th>
                                     <th>Action</th>
                                 </tr>
@@ -69,7 +68,6 @@
                                     <td>{{$branch->name}}</td>
                                     <td>{{$branch->address}}</td>
                                     <td>{{$branch->city}} </td>
-                                    <td>{{$branch->pincode}} </td>
                                     <td>{{$branch->number}}</td>
                                    <td>
                                         @if(hasPermission('branch',2))
@@ -88,7 +86,6 @@
                                     <th>Branch Name</th>
                                     <th>Address</th>
                                     <th>City</th>
-                                    <th>Zipcode</th>
                                     <th>Number</th>
                                     <th>Action</th>
                                 </tr>

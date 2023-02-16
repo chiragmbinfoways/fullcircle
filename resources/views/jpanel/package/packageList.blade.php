@@ -53,6 +53,7 @@ package List
                             <thead>
                                 <tr>
                                     <th>#</th>
+                                    <th>Branch</th>
                                     <th>Name</th>
                                     <th>Service</th>
                                     <th>Times</th>
@@ -65,8 +66,9 @@ package List
 
                                 <tr class="dataRow{{$package->id}}">
                                     <td>{{++$key}}</td>
+                                    <td>{{$package->branches->name}}</td>
                                     <td>{{$package->name}}</td>
-                                    <td>{{$package->service}}</td>
+                                    <td>{{$package->services->name}}</td>
                                     <td>{{$package->times}} </td>
                                     <td>{{$package->total}} </td>
                                    <td>
@@ -83,6 +85,7 @@ package List
                             <tfoot>
                                 <tr>
                                     <th>#</th>
+                                    <th>Branch</th>
                                     <th>Name</th>
                                     <th>Service</th>
                                     <th>Times</th>

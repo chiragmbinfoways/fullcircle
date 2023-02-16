@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePackagesTable extends Migration
+class CreateEmployeeCommissionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,13 @@ class CreatePackagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('packages', function (Blueprint $table) {
+        Schema::create('employee_commissions', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name')->nullable();
-            $table->string('service')->nullable();
-            $table->string('times')->nullable();
-            $table->string('oDate')->nullable();
-            $table->string('cDate')->nullable();
-            $table->string('branch')->nullable();
-            $table->string('total')->nullable();
+            $table->bigInteger('appointment_id')->unsigned()->nullable();
+            $table->foreign('appointment_id')->references('id')->on('bookings')->onDelete('cascade');
+            $table->string('emp_id')->nullable();
+            $table->string('commission')->nullable();
+            $table->enum('payment_status',['0','1'])->default('0')->nullable();
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
         });
@@ -34,6 +32,6 @@ class CreatePackagesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('packages');
+        Schema::dropIfExists('employee_commissions');
     }
 }

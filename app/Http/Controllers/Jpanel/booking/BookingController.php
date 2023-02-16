@@ -7,6 +7,7 @@ use App\Models\services;
 use App\Models\Employee;
 use App\Models\EmployeeService;
 use App\Models\EmployeeAvailability;
+use App\Models\EmployeeCommission;
 use App\Models\EmployeeBranch;
 use App\Models\booking;
 use App\Models\customer;
@@ -87,6 +88,22 @@ class BookingController extends Controller
         $customerAppointment->visited = $request->status;
         $customerAppointment->save();
         $booking->save();
+        // Employee Commission 
+        if ($request->status == "1") {
+            # code...
+            $commission = new EmployeeCommission();
+            $commission->appointment_id = $request->id;
+            $employee = booking::where('id',$request->id)->select('employee_id')->first();
+            $commission->emp_id = $employee->employee_id;
+            $commission_amt = booking::where('id',$request->id)->select('package_id')->first();
+            $commission_amt = $booking->package->packages->total;
+            $commission->commission = $commission_amt ;
+            $commission->save();
+        }
+        else{
+            $commission = EmployeeCommission::where('appointment_id',$request->id)->first();
+            $commission->delete();
+        }
         return response()->json(['status' => 'success', 'message' => 'Training Status has been changed successfully!']);
     }
 

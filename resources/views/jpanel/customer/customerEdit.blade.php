@@ -57,6 +57,18 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
+                                            <label for="title">Customer Id</label>
+                                            <input type="text"
+                                                class="form-control form-control-sm @error('cus_id') is-invalid @enderror "
+                                               readonly id="cus_id" name="cus_id" placeholder="Enter Customer Id"
+                                                value="{{ $customer->customer_id }}">
+                                            @if ($errors->has('cus_id'))
+                                                <div class="text-danger">{{ $errors->first('cus_id') }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
                                             <label for="title">First Name</label>
                                             <input type="text"
                                                 class="form-control form-control-sm @error('fname') is-invalid @enderror "
@@ -428,6 +440,17 @@
                                                 value="{{ $customer->zipcode }}">
                                             @if ($errors->has('zipcode'))
                                                 <div class="text-danger">{{ $errors->first('zipcode') }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="title">Remarks</label>
+                                            <textarea type="text"
+                                                class="form-control form-control-sm @error('remarks') is-invalid @enderror "
+                                                id="remarks" name="remarks" placeholder="Enter Remarks">{{ $customer->remarks }}</textarea>
+                                            @if ($errors->has('remarks'))
+                                                <div class="text-danger">{{ $errors->first('remarks') }}</div>
                                             @endif
                                         </div>
                                     </div>

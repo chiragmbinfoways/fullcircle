@@ -15,6 +15,7 @@ use App\Models\customerPackage;
 use App\Models\EmployeeService;
 use App\Models\EmployeeBranch;
 use App\Models\branch;
+use App\Models\Employee;
 use App\Models\customerAppointment;
 use Carbon\Carbon;
 class DashboardController extends Controller
@@ -22,10 +23,38 @@ class DashboardController extends Controller
    
     public function index()
     {
-        $booking = booking::all();
+        $bookings = booking::all();
+        if (!blank($bookings)) {
+            foreach ($bookings as $booking){
+            $events[] = [
+            'id'=> $booking->id,
+            'title'=>$booking->customer->fname." ".$booking->customer->lname,
+            'allDay'=> false,
+            'start'=> $booking->booking_date."T".$booking->stime,
+            'end'=>  $booking->booking_date."T".$booking->etime ,
+            'backgroundColor'=> '#00a65a', //Success (green)
+            'borderColor'=> '#00a65a', //Success (green)
+            'textColor'=> 'white',
+            'description'=> $booking->employee->fname.' '.$booking->employee->lname,
+            'resourceId'=> $booking->employee_id,
+            ];  
+
+            $resources[]= [
+            'id'=> $booking->employee_id,
+            'title'=>$booking->employee->fname." ".$booking->employee->lname,
+            ];
+            }
+        }
+        else {
+            $events = [];
+            $resources= [];
+        }
+        $branch_name = "Select Branch";
         $customers = customer::all();
         $branches = branch::all();
-        return view('jpanel.dashboard',['bookings'=> $booking, 'customers'=>$customers,'branches'=>$branches]);
+        $employees = Employee::all();
+        $employee_name = "Select Employee";
+        return view('jpanel.dashboard',['bookings'=> $events,'resources'=>$resources, 'customers'=>$customers,'branches'=>$branches,'branch_name'=>$branch_name,'employee_name'=>$employee_name,'employees'=>$employees]);
     }
 
     public function store(Request $request)
@@ -187,6 +216,91 @@ class DashboardController extends Controller
         $customerAppointment->save();
         $booking->delete();
         return response()->json(['status' => 'success', 'message' => 'Booking has been deleted successfully!']);
+    }
+
+    // Branch Filter for calender
+    public function branchFilter(Request $request )
+    {
+        $bookings = booking::where('branch', $request->branchFilter)->get();
+        if (!blank($bookings)) {
+            foreach ($bookings as $booking){
+                $events[] = [
+                'id'=> $booking->id,
+                'title'=>$booking->customer->fname." ".$booking->customer->lname,
+                'allDay'=> false,
+                'start'=> $booking->booking_date."T".$booking->stime,
+                'end'=>  $booking->booking_date."T".$booking->etime ,
+                'backgroundColor'=> '#00a65a', //Success (green)
+                'borderColor'=> '#00a65a', //Success (green)
+                'textColor'=> 'white',
+                'description'=> $booking->employee->fname.' '.$booking->employee->lname,
+                'resourceId'=> $booking->employee_id
+                ];  
+
+                $resources[]= [
+                'id'=> $booking->employee_id,
+                'title'=>$booking->employee->fname." ".$booking->employee->lname,
+                ];
+            }
+        }
+        else{
+            $events=[];
+            $resources =[];
+        }
+        $branch_name = branch::where('id',$request->branchFilter)->first();
+        $branch_name = $branch_name->name;
+        $customers = customer::all();
+        $branches = branch::all();
+        $employees = Employee::all();
+        $employee_name = "Select Employee";
+        return view('jpanel.dashboard',['bookings'=> $events,'resources'=>$resources, 'customers'=>$customers,'branches'=>$branches,'branch_name'=>$branch_name, 'employee_name'=>$employee_name,'employees'=>$employees]);
+    }
+    // Employee Filter for calender
+    public function employeeFilter(Request $request )
+    {
+        if ($request->employeeFilter== "All") {
+        $bookings = booking::all();
+        }
+        else{
+        $bookings = booking::where('employee_id', $request->employeeFilter)->get();
+        }
+        if (!blank($bookings)) {
+            foreach ($bookings as $booking){
+                $events[] = [
+                'id'=> $booking->id,
+                'title'=>$booking->customer->fname." ".$booking->customer->lname,
+                'allDay'=> false,
+                'start'=> $booking->booking_date."T".$booking->stime,
+                'end'=>  $booking->booking_date."T".$booking->etime ,
+                'backgroundColor'=> '#00a65a', //Success (green)
+                'borderColor'=> '#00a65a', //Success (green)
+                'textColor'=> 'white',
+                'description'=> $booking->employee->fname.' '.$booking->employee->lname,
+                'resourceId'=> $booking->employee_id
+                ];  
+
+                $resources[]= [
+                'id'=> $booking->employee_id,
+                'title'=>$booking->employee->fname." ".$booking->employee->lname,
+                ];
+            }
+        }
+        else{
+            $events =[];
+            $resources =[];
+        }
+        if ($request->employeeFilter== "All") {
+        $employee_name ="All";
+        }
+        else{
+        $employee_name = Employee::where('id',$request->employeeFilter)->first();
+        $employee_name = $employee_name->fname." ".$employee_name->lname;
+        }
+        $customers = customer::all();
+        $branches = branch::all();
+        $employees = Employee::all();
+        $branch_name = "Select Branch";
+        return view('jpanel.dashboard',['bookings'=> $events,'resources'=>$resources, 'customers'=>$customers,'branches'=>$branches,'branch_name'=>$branch_name, 'employee_name'=>$employee_name,'employees'=>$employees]);
     }
     
 }

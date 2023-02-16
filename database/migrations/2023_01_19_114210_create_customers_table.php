@@ -15,6 +15,7 @@ class CreateCustomersTable extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('customer_id')->nullable();
             $table->string('fname')->nullable();
             $table->string('lname')->nullable();
             $table->string('email')->nullable();
@@ -25,6 +26,7 @@ class CreateCustomersTable extends Migration
             $table->string('address1')->nullable();
             $table->string('address2')->nullable();
             $table->string('zipcode')->nullable();
+            $table->string('remarks')->nullable();
             $table->enum('gender',['M','F'])->nullable();
             $table->enum('status',['1','0'])->default('1');
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));

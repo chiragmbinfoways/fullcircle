@@ -80,16 +80,11 @@
                     } 
                 }
             });
-        });
+    });
 
-
-        $('#emp').change(function() {
-            $("#bookings").empty();
-            $('#available').empty();
-
-
-        });
-
+    // Calender Attributes 
+    var booking = @json($bookings);
+    var resources = @json($resources);
     // CALENDER CRUD
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
@@ -107,14 +102,15 @@
             nowIndicator:true,
             editable: true,
             selectable: true,
+            selectConstraint: "businessHours",
             height: 600,
             weekends: false,
             schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
             initialView: 'resourceTimeGridDay',
             headerToolbar: {
-                left: 'title',
-                center: 'prev,today,next',
-                right: 'resourceTimeGridWeek,resourceTimeGridDay,agendaThreeDay,appointment',
+                left: 'prev,today,next',
+                center: 'title',
+                right: 'resourceTimeGridDay,timeGridWeek,agendaThreeDay,appointment',
             },
             views: {
                 agendaThreeDay: {
@@ -124,33 +120,13 @@
                     }
             },
             businessHours: {
-            daysOfWeek: [ 1, 2, 3, 4,5 ], 
+            daysOfWeek: [ 1, 2, 3, 4, 5 ], 
             startTime: '10:00', 
             endTime: '18:00', 
             },
 
-            resources: [
-                @foreach ($bookings as $booking)
-                { id: '{{$booking->employee_id}}', title: '{{$booking->employee->fname}} {{$booking->employee->lname}}' },
-                @endforeach
-            ],
-            events: [
-                @foreach ($bookings as $booking)
-                    {
-                        id: '{{ $booking->id }}',
-                        title: '{{ $booking->customer->fname }} {{ $booking->customer->lname }}',
-                        allDay: false,
-                        start: '{{ $booking->booking_date }}T{{ $booking->stime }}',
-                        end: '{{ $booking->booking_date }}T{{ $booking->etime }}',
-                        backgroundColor: '#00a65a', //Success (green)
-                        borderColor: '#00a65a', //Success (green)
-                        textColor: 'white',
-                        description: '{{ $booking->package->packages->name }}',
-                        resourceId: '{{$booking->employee_id}}',
-                    },
-                @endforeach
-            ],
-
+            resources:resources,
+            events: booking,
             slotDuration: '00:15:00',
             themeSystem: 'bootstrap5',
             select: function(start, end, allDays) {
@@ -190,16 +166,10 @@
                         },
                         error: function(error) {
                             if (error.responseJSON.errors) {
-                                $('#customerError').html(error.responseJSON
-                                    .errors
-                                    .customer);
-                                $('#packageError').html(error.responseJSON
-                                    .errors
-                                    .package);
-                                $('#empError').html(error.responseJSON.errors
-                                    .emp);
-                                $('#branchError').html(error.responseJSON.errors
-                                    .branch);
+                                $('#customerError').html(error.responseJSON.errors.customer);
+                                $('#packageError').html(error.responseJSON.errors.package);
+                                $('#empError').html(error.responseJSON.errors.emp);
+                                $('#branchError').html(error.responseJSON.errors.branch);
                             }
                         }
                     });
@@ -251,7 +221,6 @@
                 var url="{{route('edit.booking.dashboard','id')}}";
                     url=url.replace('id',id);  
                     _details.find('#title').text(info.event.title)
-                    _details.find('#packageName').text(info.event.extendedProps.description)
                     _details.find('#start').text(new Date(info.event.start).toLocaleTimeString())
                     _details.find('#end').text(new Date(info.event.end).toLocaleTimeString())
                     _details.find('#delete').attr('data-id', id)
@@ -269,7 +238,6 @@
     $("#bookingModal").on("hidden.bs.modal",function(){
         $('#bookAppointment').unbind();
     });
-    $('.fc').css('background-color','black');
 
     // DELETE FUNCTION FOR BOOKING
     $("#delete").on('click', function(e) {

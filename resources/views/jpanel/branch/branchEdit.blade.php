@@ -85,7 +85,7 @@
                                             @endif
                                         </div>
                                     </div>
-                                     <div class="col-md-4">
+                                     <div class="col-md-4 d-none">
                                         <div class="form-group">
                                             <label for="title">Zipcode</label>
                                             <input type="text" class="form-control form-control-sm @error('zipcode') is-invalid @enderror " id="zipcode"

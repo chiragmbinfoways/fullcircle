@@ -15,4 +15,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/customer/store/package/{id}', [CustomerController::class,'storePackage'])->name('store.customerPackage');
     Route::post('/customer/package/status', [CustomerController::class,'customerStatusUpdate'])->name('status.change.customerPackage');
     Route::post('/customer/visited/status', [CustomerController::class,'appointmentStatusUpdate'])->name('status.appointment.change');
+    Route::get('/customer/package/extrasession/{id}', [CustomerController::class,'extraPackage'])->name('package.extrasession.customer');
+    Route::get('/customer/branch/package', [CustomerController::class,'branchPackages'])->name('branch.packages');
+
 });

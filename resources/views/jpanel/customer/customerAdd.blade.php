@@ -57,6 +57,18 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
+                                            <label for="title">Customer Id</label>
+                                            <input type="text"
+                                                class="form-control form-control-sm @error('cus_id') is-invalid @enderror "
+                                               readonly id="cus_id" name="cus_id" placeholder="Enter Customer Id"
+                                                value="{{$last}}">
+                                            @if ($errors->has('cus_id'))
+                                                <div class="text-danger">{{ $errors->first('cus_id') }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
                                             <label for="title">First Name</label>
                                             <input type="text"
                                                 class="form-control form-control-sm @error('fname') is-invalid @enderror "
@@ -106,7 +118,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="title">Country</label>
-                                            <select class="select2 " name="country" style="width: 100%;"
+                                            <select class="select2 form-control-sm " name="country" style="width: 100%;"
                                                 data-placeholder="Select Country">
                                                 <option value="" disabled selected="selected">Select Country</option>
                                                 <option value="Afghanistan">Afghanistan</option>
@@ -432,11 +444,20 @@
                                         </div>
                                     </div>
                                     <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="title">Remarks</label>
+                                            <textarea type="text" class="form-control form-control-sm @error('remarks') is-invalid @enderror " id="remarks" name="remarks" placeholder="Enter Remarks" value="{{ old('remarks') }}"></textarea>
+                                            @if ($errors->has('remarks'))
+                                                <div class="text-danger">{{ $errors->first('remarks') }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
                                         <label >Gender</label>
                                         <div class="form-group d-flex">
                                             <div class="form-check mr-3">
                                                 <input class="form-check-input @error('gender') is-invalid @enderror"
-                                                    type="radio" name="gender" value="M" id="male">
+                                                   checked type="radio" name="gender" value="M" id="male">
                                                 <label class="form-check-label" for="male">Male</label>
                                             </div>
                                             <div class="form-check">
@@ -449,6 +470,7 @@
                                             <div class="text-danger">{{ $errors->first('gender') }}</div>
                                         @endif
                                     </div>
+                                    
                                 </div>
                             </div>
                             <!-- /.card-body -->

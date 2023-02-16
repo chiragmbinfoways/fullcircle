@@ -57,11 +57,22 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>Select Package:</label>
-                                            <select class="form-control select2 @error('package') is-invalid @enderror " name="package" data-placeholder="Select Package" >
-                                                @foreach ($packages as $package)
-                                                    <option value="{{$package->id}}">{{$package->name}}</option>
+                                            <label>Select Branch:</label>
+                                            <select class="form-control select2 @error('branch') is-invalid @enderror " id="branch" name="branch" data-placeholder="Select branch" >
+                                                <option value="" selected disabled>Select Branch</option>
+                                                @foreach ($branches as $branch)
+                                                    <option value="{{$branch->id}}">{{$branch->name}}</option>
                                                 @endforeach
+                                            </select>
+                                            @if ($errors->has('branch'))
+                                            <div class="text-danger">{{ $errors->first('branch') }}</div>
+                                            @endif
+                                        </div>
+                                    </div>  
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Select Package:</label>
+                                            <select class="form-control select2 @error('package') is-invalid @enderror " id="package" name="package" data-placeholder="Select Package" >
                                             </select>
                                             @if ($errors->has('package'))
                                             <div class="text-danger">{{ $errors->first('package') }}</div>
@@ -102,6 +113,8 @@
                                             <tr>
                                                 <th>#</th>
                                                 <th>Package Name</th>
+                                                <th>Branch</th>
+                                                <th>Amount(AED)</th>
                                                 <th>Payment Status</th>
                                             </tr>
                                         </thead>
@@ -111,6 +124,8 @@
                                             <tr class="dataRow{{$customerpackage->id}}">
                                                 <td>{{++$key}}</td>
                                                 <td>{{$customerpackage->package_name}}</td>
+                                                <td>{{$customerpackage->packages->branches->name}}</td>
+                                                <td>{{$customerpackage->packages->total}}</td>
                                                 <td>
                                                     @if(hasPermission('customer',2))
                                                     <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
@@ -126,6 +141,8 @@
                                             <tr>
                                                 <th>#</th>
                                                 <th>Package Name</th>
+                                                <th>Branch</th>
+                                                <th>Amount(AED)</th>
                                                 <th>Payment Status</th>
                                             </tr>
                                         </tfoot>
@@ -225,7 +242,9 @@
                     </div>
                     <!-- /.card-body -->
                     <div class="card-footer">
-
+                        <form action="{{ route('package.extrasession.customer',$customerpackage->id) }}" method="get">
+                            <button type="submit" class="btn btn-sm btn-secondary">Add Extra Session</button>
+                        </form>
                     </div>
                     <!-- /.card-footer-->
                 </div>

@@ -9,7 +9,7 @@
     <div class="container-fluid">
         <div class="row mb-2 flash-message">
             <div class="col-sm-3">
-                <h1>Task List</h1>
+                <h1>Appointment List</h1>
             </div>
             <div class="col-6 messageArea">
                 @include('jpanel/flash-message')
@@ -17,7 +17,7 @@
             <div class="col-sm-3">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Task List</li>
+                    <li class="breadcrumb-item active">Appointment List</li>
                 </ol>
             </div>
         </div>
@@ -33,7 +33,7 @@
                 <!-- Default box -->
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Task List</h3>
+                        <h3 class="card-title">Appointment   List</h3>
                         <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                                 <i class="fas fa-minus"></i>
@@ -80,7 +80,7 @@
                                     @if(hasPermission('appointments',4))
                                    <td>
                                         @if(hasPermission('appointments',4))
-                                        <a href="javascript:void(0)" data-id="{{$booking->id}}" class="text-danger deleteBooking" id="delete{{$booking->id}}" name="delete{{$booking->id}}" data-toggle="tooltip" data-placement="top" title="Trash"><i class="fas fa-trash"></i></a>
+                                        <a href="javascript:void(0)" data-id="{{$booking->id}}" class="text-secondary deleteBooking" id="delete{{$booking->id}}" name="delete{{$booking->id}}" data-toggle="tooltip" data-placement="top" title="Trash"><i class="fas fa-trash"></i></a>
                                         @endif
                                     </td>
                                     @endif

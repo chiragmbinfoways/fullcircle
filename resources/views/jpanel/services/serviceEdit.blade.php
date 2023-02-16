@@ -67,7 +67,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="title">Price (₹)</label>
+                                            <label for="title">Price (AED)</label>
                                             <input type="text" class="form-control form-control-sm @error('price') is-invalid @enderror " id="price"
                                                 name="price" placeholder="Enter Price" value="{{$service->price}}">
                                                 @if ($errors->has('price'))
