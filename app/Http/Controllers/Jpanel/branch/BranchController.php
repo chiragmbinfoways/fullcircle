@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Jpanel\branch;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\branch;
+use App\Models\Branch;
 
 class BranchController extends Controller
 {
@@ -12,7 +12,7 @@ class BranchController extends Controller
     {
         $hasPermission = hasPermission('branch', 2);
         if ($hasPermission) {
-            $branches = branch::all();
+            $branches = Branch::all();
             return view('jpanel.branch.branchList'
             , compact('branches')
         );
@@ -41,7 +41,7 @@ class BranchController extends Controller
             'number' => 'numeric',
             'zipcode' => 'numeric',
         ]);
-        $branch = new branch();
+        $branch = new Branch();
         $branch->name = $request->bname;
         $branch->address = $request->address;
         $branch->city = $request->city;
@@ -58,7 +58,7 @@ class BranchController extends Controller
 
     public function delete(Request $request)
     {
-        $branch = branch::where('id', $request->id)->get()->first();
+        $branch = Branch::where('id', $request->id)->get()->first();
         $branch->delete();
 
         return response()->json(['status' => 'success', 'message' => 'Branch has been deleted successfully!']);
@@ -68,7 +68,7 @@ class BranchController extends Controller
     {
         $hasPermission = hasPermission('branch', 2);
         if ($hasPermission) {
-            $branch = branch::where('id', $id)->get()->first();
+            $branch = Branch::where('id', $id)->get()->first();
             return view('jpanel.branch.branchEdit', compact('branch'));
         } else {
             abort(403);
@@ -85,7 +85,7 @@ class BranchController extends Controller
             'zipcode' => 'numeric',
         ]);
 
-        $branch = branch::where('id', $request->id)->update(['name' => $request->bname,'address' => $request->address,'city' => $request->city, 'number'=>$request->number , 'pincode'=>$request->zipcode]);
+        $branch = Branch::where('id', $request->id)->update(['name' => $request->bname,'address' => $request->address,'city' => $request->city, 'number'=>$request->number , 'pincode'=>$request->zipcode]);
         if ($branch) {
             return redirect('jpanel/branch/edit/' . $request->id)->with('success', 'Branch has been updated!');
         } else {

@@ -14,4 +14,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/employee/availability/{id}', [EmployeeController::class,'availability'])->name('availability.employee');
     Route::post('/employee/availability/store/{id}', [EmployeeController::class,'storeAvailability'])->name('store.availability');
     Route::post('/employee/availability/delete', [EmployeeController::class,'deleteAvl'])->name('delete.availability');
+    Route::get('/employee/commission/{id}', [EmployeeController::class,'commission'])->name('commission.employee');
+    Route::post('/commission/status', [EmployeeController::class,'commissionStatus'])->name('status.change.commission');
+
+
 });

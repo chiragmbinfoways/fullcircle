@@ -5,12 +5,13 @@ use Illuminate\Support\Facades\Hash;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\services;
+use App\Models\Services;
 use App\Models\User;
 use App\Models\Employee;
-use App\Models\branch;
+use App\Models\Branch;
 use App\Models\EmployeeService;
 use App\Models\EmployeeAvailability;
+use App\Models\EmployeeCommission;
 use App\Models\EmployeeBranch;
 use Carbon\Carbon;
 
@@ -36,8 +37,8 @@ class EmployeeController extends Controller
     {
         $hasPermission = hasPermission('employees', 1);
         if ($hasPermission) {
-            $branches = branch::all();
-            $services = services::all();
+            $branches = Branch::all();
+            $services = Services::all();
             return view('jpanel.employee.employeeAdd',
              compact('services','branches')
             );
@@ -187,4 +188,25 @@ class EmployeeController extends Controller
         $employee->delete();
         return response()->json(['status' => 'success', 'message' => 'Avalability has been deleted successfully!']);
     }
+    public function commission($id)
+    {
+        $hasPermission = hasPermission('employees', 2);
+        if ($hasPermission) {
+            $commissions = EmployeeCommission::where('emp_id',$id)->get();
+            $recivableAmt = EmployeeCommission::where('emp_id',$id)->where('payment_status',"0")->sum('commission');
+            return view('jpanel.employee.employeeCommission', compact('commissions','recivableAmt'));
+        } else {
+            abort(403);
+        }
+    }
+
+    
+    public function commissionStatus(Request $request)
+    {
+        $employee = EmployeeCommission::find($request->id);
+        $employee->payment_status = $request->status;
+        $employee->save();
+        return response()->json(['status' => 'success', 'message' => ' Payment Status has been changed successfully!']);
+    }
+
 }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Jpanel\services;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\services;
+use App\Models\Services;
 
 class ServiceController extends Controller
 {
@@ -12,7 +12,7 @@ class ServiceController extends Controller
     {
         $hasPermission = hasPermission('services', 2);
         if ($hasPermission) {
-            $services = services::all();
+            $services = Services::all();
             return view('jpanel.services.serviceList'
             , compact('services')
         );
@@ -41,7 +41,7 @@ class ServiceController extends Controller
             'time' => 'required|numeric',
             // 'gst' => 'required',
         ]);
-        $services = new services();
+        $services = new Services();
         $services->name = $request->name;
         $services->price = $request->price;
         $services->gst = $request->gst;
@@ -56,7 +56,7 @@ class ServiceController extends Controller
 
     public function statusUpdate(Request $request)
     {
-        $service = services::find($request->id);
+        $service = Services::find($request->id);
         $service->status = $request->status;
         $service->save();
         return response()->json(['status' => 'success', 'message' => 'Status has been changed successfully!']);
@@ -64,7 +64,7 @@ class ServiceController extends Controller
 
     public function delete(Request $request)
     {
-        $service = services::where('id', $request->id)->get()->first();
+        $service = Services::where('id', $request->id)->get()->first();
         $service->delete();
 
         return response()->json(['status' => 'success', 'message' => 'Service has been deleted successfully!']);
@@ -74,7 +74,7 @@ class ServiceController extends Controller
     {
         $hasPermission = hasPermission('services', 2);
         if ($hasPermission) {
-            $service = services::where('id', $id)->get()->first();
+            $service = Services::where('id', $id)->get()->first();
             return view('jpanel.services.serviceEdit', compact('service'));
         } else {
             abort(403);
@@ -90,7 +90,7 @@ class ServiceController extends Controller
             // 'gst' => 'required',
         ]);
 
-        $service = services::where('id', $request->id)->update(['name' => $request->name,'price' => $request->price,'gst' => $request->gst, 'time'=>$request->time]);
+        $service = Services::where('id', $request->id)->update(['name' => $request->name,'price' => $request->price,'gst' => $request->gst, 'time'=>$request->time]);
         if ($service) {
             return redirect('jpanel/service/edit/' . $request->id)->with('success', 'Service has been updated!');
         } else {

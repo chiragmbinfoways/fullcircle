@@ -91,7 +91,10 @@
                                             <a href="{{route('edit.employee',$employee->id)}}" class="text-success " data-toggle="tooltip" data-placement="top" title="Edit"><i class="fas fa-edit"></i></a> |
                                         @endif
                                         @if(hasPermission('employees',4))
-                                        <a href="javascript:void(0)" data-id="{{$employee->id}}" class="text-danger deleteEmployee" id="delete{{$employee->id}}" name="delete{{$employee->id}}" data-toggle="tooltip" data-placement="top" title="Trash"><i class="fas fa-trash"></i></a>
+                                        <a href="javascript:void(0)" data-id="{{$employee->id}}" class="text-danger deleteEmployee" id="delete{{$employee->id}}" name="delete{{$employee->id}}" data-toggle="tooltip" data-placement="top" title="Trash"><i class="fas fa-trash"></i></a> |
+                                        @endif
+                                        @if(hasPermission('employees',2))
+                                        <a href="{{route('commission.employee',$employee->id)}}" class="" data-toggle="tooltip" data-placement="top" title=""><i class="fas fa-money-bill-wave"></i></a> 
                                         @endif
                                     </td>
                                 </tr>

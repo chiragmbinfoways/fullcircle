@@ -5,7 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title')</title>
-
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="{{asset('plugins/daterangepicker/daterangepicker.css')}}">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
     <!-- overlayScrollbars -->
@@ -283,9 +284,38 @@
                             </ul>
                         </li>
                         @endif
-
-
-                         @if(hasAnyOnePermission('appointments'))
+                        @if(hasAnyOnePermission('report'))
+                        <li class="nav-item {{ request()->is('jpanel/report*') ? 'menu-open' : '' }}">
+                           <a href="#" class="nav-link {{ request()->is('jpanel/report*') ? 'active' : '' }}">
+                               <i class="far fa-clipboard nav-icon"></i>
+                               <p>
+                                   Reports
+                                   <i class="right fas fa-angle-left"></i>
+                               </p>
+                           </a>
+                           <ul class="nav nav-treeview">
+                               <li class="nav-item">
+                                   <a href="{{route('report.branch')}}" class="nav-link {{ request()->is('jpanel/report/branch') ? 'active' : '' }}">
+                                    <i class="fas fa-code-branch nav-icon"></i>
+                                       <p>Branch Report</p>
+                                   </a>
+                               </li>
+                               <li class="nav-item">
+                                   <a href="{{route('report.trainer')}}" class="nav-link  {{ request()->is('jpanel/report/trainer') ? 'active' : '' }} " >
+                                    <i class="fas fa-dumbbell nav-icon"></i>
+                                       <p>Trainer Report</p>
+                                   </a> 
+                               </li>
+                               <li class="nav-item">
+                                   <a href="{{route('report.customer')}}" class="nav-link  {{ request()->is('jpanel/report/customer') ? 'active' : '' }} " >
+                                    <i class="far fa-user-circle nav-icon"></i>
+                                       <p>Customer Report</p>
+                                   </a> 
+                               </li>
+                           </ul>
+                       </li>
+                       @endif
+                       @if(hasAnyOnePermission('appointments'))
                          <li class="nav-item">
                             <a href="{{ route('list.task') }}" class="nav-link {{ (request()->is('jpanel/booking/task')) ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-list"></i>
@@ -295,6 +325,8 @@
                             </a>
                         </li>
                         @endif
+                        
+                       
 
                        {{-- <li class="nav-item">
                             <a href="{{ route('logout') }}" class="nav-link">
@@ -951,6 +983,9 @@
      <script src="{{asset('plugins/moment/moment.min.js')}}"></script>
      <script src="{{asset('plugins/fullcalendar/main.js')}}"></script>
      <script src="https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@6.1.0/index.global.min.js"></script>
+      <!-- daterangepicker -->
+    <script src="{{asset('plugins/moment/moment.min.js')}}"></script>
+    <script src="{{asset('plugins/daterangepicker/daterangepicker.js')}}"></script>
     <!-- Select2 -->
     <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
     <!-- Sweet Alert js -->

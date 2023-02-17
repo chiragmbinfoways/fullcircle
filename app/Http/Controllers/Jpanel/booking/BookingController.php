@@ -3,19 +3,19 @@
 namespace App\Http\Controllers\Jpanel\booking;
 
 use App\Http\Controllers\Controller;
-use App\Models\services;
+use App\Models\Services;
 use App\Models\Employee;
 use App\Models\EmployeeService;
 use App\Models\EmployeeAvailability;
 use App\Models\EmployeeCommission;
 use App\Models\EmployeeBranch;
-use App\Models\booking;
-use App\Models\customer;
-use App\Models\customerPackage;
-use App\Models\customerAppointment;
-use App\Models\package;
+use App\Models\Booking;
+use App\Models\Customer;
+use App\Models\CustomerPackage;
+use App\Models\CustomerAppointment;
+use App\Models\Package;
 use Illuminate\Http\Request;
-use App\Models\branch;
+use App\Models\Branch;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
@@ -25,7 +25,7 @@ class BookingController extends Controller
     {
         $hasPermission = hasPermission('booking', 2);
         if ($hasPermission) {
-            $bookings = booking::orderBy('id', 'DESC')->get();
+            $bookings = Booking::orderBy('id', 'DESC')->get();
             return view('jpanel.booking.bookingList', compact('bookings'));
         } else {
             abort(404);
@@ -36,9 +36,9 @@ class BookingController extends Controller
     {
         $hasPermission = hasPermission('booking', 1);
         if ($hasPermission) {
-            $customers = customer::all();
-            $services = services::all();
-            $branches = branch::all();
+            $customers = Customer::all();
+            $services = Services::all();
+            $branches = Branch::all();
             return view('jpanel.booking.bookingAdd',['services'=>$services,'customers'=>$customers,'branches'=>$branches]);
         } else {
             abort(403);
@@ -56,7 +56,7 @@ class BookingController extends Controller
             'day' => 'required',
             'stime' => 'required',
         ]);
-        $book = new booking();
+        $book = new Booking();
         $book->customer_id = $request->customer ;
         $book->package_id = $request->package;
         $book->employee_id = $request->emp;
@@ -69,11 +69,11 @@ class BookingController extends Controller
         $book->etime =$endtime;
         $book->save();
         // customer package id
-        $customer_appointments = customerAppointment::where('customerPack_id', $request->package)->where('appointment_taken', "0")->get()->first();
+        $customer_appointments = CustomerAppointment::where('customerPack_id', $request->package)->where('appointment_taken', "0")->get()->first();
         if ($customer_appointments) {
         $customer_packageId = $customer_appointments->id;
         // customer appointment 
-        $customer_appointments = customerAppointment::where('id', $customer_packageId)->update(['booking_id' => $book->id,'Appointment_date' => $request->date,'time' => $request->stime. "-".$endtime,'Trainer' => $request->emp,'appointment_taken' => "1"]);
+        $customer_appointments = CustomerAppointment::where('id', $customer_packageId)->update(['booking_id' => $book->id,'Appointment_date' => $request->date,'time' => $request->stime. "-".$endtime,'Trainer' => $request->emp,'appointment_taken' => "1"]);
         return redirect('jpanel/booking/list')->with('success', 'Booking has been done successfully!');
         }
         else {
@@ -82,9 +82,9 @@ class BookingController extends Controller
     }
     public function workStatus(Request $request)
     {
-        $booking = booking::find($request->id);
+        $booking = Booking::find($request->id);
         $booking->work_status = $request->status;
-        $customerAppointment = customerAppointment::where('booking_id',$request->id)->first();
+        $customerAppointment = CustomerAppointment::where('booking_id',$request->id)->first();
         $customerAppointment->visited = $request->status;
         $customerAppointment->save();
         $booking->save();
@@ -93,9 +93,9 @@ class BookingController extends Controller
             # code...
             $commission = new EmployeeCommission();
             $commission->appointment_id = $request->id;
-            $employee = booking::where('id',$request->id)->select('employee_id')->first();
+            $employee = Booking::where('id',$request->id)->select('employee_id')->first();
             $commission->emp_id = $employee->employee_id;
-            $commission_amt = booking::where('id',$request->id)->select('package_id')->first();
+            $commission_amt = Booking::where('id',$request->id)->select('package_id')->first();
             $commission_amt = $booking->package->packages->total;
             $commission->commission = $commission_amt ;
             $commission->save();
@@ -109,8 +109,8 @@ class BookingController extends Controller
 
     public function delete(Request $request)
     {
-        $booking = booking::where('id', $request->id)->get()->first();
-        $customerAppointment = customerAppointment::where('booking_id',$request->id)->first();
+        $booking = Booking::where('id', $request->id)->get()->first();
+        $customerAppointment = CustomerAppointment::where('booking_id',$request->id)->first();
         $customerAppointment->booking_id = "-";
         $customerAppointment->Appointment_date = "-";
         $customerAppointment->time = "-";
@@ -127,9 +127,9 @@ class BookingController extends Controller
     public function packageData(Request $request)
     {
         $id = $request->id;
-        $packages = customerPackage::where('customer_id', $id)->get();
+        $packages = CustomerPackage::where('customer_id', $id)->get();
         foreach ($packages as  $package) {
-           $package_available = customerAppointment::where('customerPack_id',$package->id)->where('appointment_taken', '0')->first();
+           $package_available = CustomerAppointment::where('customerPack_id',$package->id)->where('appointment_taken', '0')->first();
            if ($package_available) {
             $packages_array[] = $package;
            }
@@ -138,10 +138,10 @@ class BookingController extends Controller
     }
     public function employeeData(Request $request)
     {
-        $packages = customerPackage::where('id',$request->id)->get()->first();
-        $package = package::where('id',$packages->package_id)->get()->first();
+        $packages = CustomerPackage::where('id',$request->id)->get()->first();
+        $package = Package::where('id',$packages->package_id)->get()->first();
         $service_id =$package->service;
-        $Service_time = services::where('id',$service_id)->first();
+        $Service_time = Services::where('id',$service_id)->first();
         $Service_time = $Service_time->time;
         $branchEmployees = EmployeeBranch:: where('branch_id',$request->branch_id)->get();
         foreach ($branchEmployees as $branchEmployee ){
@@ -164,7 +164,7 @@ class BookingController extends Controller
     // customer data while change in branch
     public function customerData(Request $request)
     {
-        $customer = customer::all();
+        $customer = Customer::all();
         return response()->json($customer);
     }
 
@@ -174,7 +174,7 @@ class BookingController extends Controller
     {
         $hasPermission = hasAnyOnePermission('appointments');
         if ($hasPermission) {
-            $booking = booking::orderBy('id', 'DESC')->get();
+            $booking = Booking::orderBy('id', 'DESC')->get();
             // dd(Auth::user()->id);
         if (Auth::user()->status == 1) {
             if ($hasPermission) {
@@ -185,7 +185,7 @@ class BookingController extends Controller
         } else {
             $user =Employee::where('user_id', Auth::id())->get()->first();
             $idOfEmployee = $user->id;
-            $myItem = booking::where('employee_id', $idOfEmployee)->orderBy('id', 'desc')->get();
+            $myItem = Booking::where('employee_id', $idOfEmployee)->orderBy('id', 'desc')->get();
             if ($hasPermission) {
                 return view('jpanel.booking.task', ['bookings' => $myItem]);
             } else {

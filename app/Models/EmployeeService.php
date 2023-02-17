@@ -10,7 +10,7 @@ class EmployeeService extends Model
     use HasFactory;
 
     public function servicesDetail(){
-        return $this->hasOne(services::class,'id','service_id');
+        return $this->hasOne(Services::class,'id','service_id');
     }
     public function employeeDetails(){
         return $this->hasOne(Employee::class,'id','employee_id');

@@ -4,12 +4,13 @@ namespace App\Http\Controllers\Jpanel\customer;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\package;
-use App\Models\branch;
-use App\Models\customer;
-use App\Models\customerPackage;
-use App\Models\customerAppointment;
-use App\Models\booking;
+use App\Models\Package;
+use App\Models\Branch;
+use App\Models\Customer;
+use App\Models\CustomerPackage;
+use App\Models\CustomerAppointment;
+use App\Models\EmployeeCommission;
+use App\Models\Booking;
 
 
 class CustomerController extends Controller
@@ -18,7 +19,7 @@ class CustomerController extends Controller
     {
         $hasPermission = hasPermission('customer', 2);
         if ($hasPermission) {
-            $customers = customer::all();
+            $customers = Customer::all();
             return view('jpanel.customer.customerList', compact('customers'));
         } else {
             abort(404);
@@ -29,7 +30,7 @@ class CustomerController extends Controller
     {
         $hasPermission = hasPermission('services', 1);
         if ($hasPermission) {
-             $last_customer = customer::orderBy('customer_id', 'DESC')->first();
+             $last_customer = Customer::orderBy('customer_id', 'DESC')->first();
             if ($last_customer) {
                 $last = $last_customer->customer_id + 1;
             } else {
@@ -56,7 +57,7 @@ class CustomerController extends Controller
             'zipcode' => 'required',
             'gender' => 'required',
         ]);
-        $customer = new customer();
+        $customer = new Customer();
         $customer->customer_id = $request->cus_id;
         $customer->fname = $request->fname;
         $customer->lname = $request->lname;
@@ -81,7 +82,7 @@ class CustomerController extends Controller
 
     public function statusUpdate(Request $request)
     {
-        $customer = customer::find($request->id);
+        $customer = Customer::find($request->id);
         $customer->status = $request->status;
         $customer->save();
         return response()->json(['status' => 'success', 'message' => 'Status has been changed successfully!']);
@@ -89,7 +90,7 @@ class CustomerController extends Controller
 
     public function delete(Request $request)
     {
-        $customer = customer::where('id', $request->id)
+        $customer = Customer::where('id', $request->id)
             ->get()
             ->first();
         $customer->delete();
@@ -101,7 +102,7 @@ class CustomerController extends Controller
     {
         $hasPermission = hasPermission('customer', 2);
         if ($hasPermission) {
-            $customer = customer::where('id', $id)
+            $customer = Customer::where('id', $id)
                 ->get()
                 ->first();
             return view('jpanel.customer.customerEdit', compact('customer'));
@@ -127,7 +128,7 @@ class CustomerController extends Controller
             'gender' => 'required',
         ]);
 
-        $custmor = customer::where('id', $request->id)->update([
+        $custmor = Customer::where('id', $request->id)->update([
             'customer_id' => $request->cus_id,
             'fname' => $request->fname,
             'lname' => $request->lname,
@@ -152,13 +153,13 @@ class CustomerController extends Controller
     {
         $hasPermission = hasPermission('customer', 2);
         if ($hasPermission) {
-            $branches = branch::all();
-            $name = customer::where('id', $id)->get()->first();
-            $customerpackages = customerPackage::where('customer_id', $id)->orderBy('id','desc')->get();
+            $branches = Branch::all();
+            $name = Customer::where('id', $id)->get()->first();
+            $customerpackages = CustomerPackage::where('customer_id', $id)->orderBy('id','desc')->get();
             $allAppointments= [];
             if (!blank($customerpackages)) {
                 foreach ($customerpackages as $key => $customerpackage) {
-                    $appointments = customerAppointment::where('customerPack_id', $customerpackage->id)->get();
+                    $appointments = CustomerAppointment::where('customerPack_id', $customerpackage->id)->get();
                     foreach($appointments as $Appointments){
                         $allAppointments[]=$Appointments;
                     }
@@ -176,16 +177,16 @@ class CustomerController extends Controller
         $request->validate([
             'package' => 'required',
         ]);
-        $customer_package = new customerPackage();
+        $customer_package = new CustomerPackage();
         $customer_package->customer_id = $id;
         $customer_package->package_id = $request->package;
-        $package_name = package::where('id', $request->package)
+        $package_name = Package::where('id', $request->package)
             ->get()
             ->first();
         $customer_package->package_name = $package_name->name;
         $customer_package->save();
         for ($i = 0; $i < $package_name->times; $i++) {
-            $defaultSlots = new customerAppointment();
+            $defaultSlots = new CustomerAppointment();
             $defaultSlots->customerPack_id = $customer_package->id;
             $defaultSlots->Appointment_date = '-';
             $defaultSlots->time = '-';
@@ -201,24 +202,40 @@ class CustomerController extends Controller
     }
     public function customerStatusUpdate(Request $request)
     {
-        $customerPackage = customerPackage::find($request->id);
+        $customerPackage = CustomerPackage::find($request->id);
         $customerPackage->payment_status = $request->status;
         $customerPackage->save();
         return response()->json(['status' => 'success', 'message' => 'Status has been changed successfully!']);
     }
     public function appointmentStatusUpdate(Request $request)
     {
-        $customerPackage = customerAppointment::find($request->id);
+        $customerPackage = CustomerAppointment::find($request->id);
         $customerPackage->visited = $request->status;
-        $bookingWorkStatus = booking::where('id',$customerPackage->booking_id)->first();
+        $booking_id = $customerPackage->booking_id;
+        $bookingWorkStatus = Booking::where('id',$customerPackage->booking_id)->first();
         $bookingWorkStatus->work_status = $request->status;
         $bookingWorkStatus->save();
         $customerPackage->save();
+         // Employee Commission 
+         if ($request->status == "1") {
+            $commission = new EmployeeCommission();
+            $commission->appointment_id = $booking_id;
+            $employee = Booking::where('id',$booking_id)->select('employee_id')->first();
+            $commission->emp_id = $employee->employee_id;
+            $commission_amt = Booking::where('id',$booking_id)->select('package_id')->first();
+            $commission_amt = $commission_amt->package->packages->total;
+            $commission->commission = $commission_amt ;
+            $commission->save();
+        }
+        else{
+            $commission = EmployeeCommission::where('appointment_id',$booking_id)->first();
+            $commission->delete();
+        }
         return response()->json(['status' => 'success', 'message' => 'Status has been changed successfully!']);
     }
     public function extraPackage(Request $request,$id)
     {
-        $extraAppointment = new customerAppointment();
+        $extraAppointment = new CustomerAppointment();
         $extraAppointment->booking_id = '-';
         $extraAppointment->customerPack_id = $id;
         $extraAppointment->Appointment_date = '-';
@@ -229,7 +246,7 @@ class CustomerController extends Controller
     }
     public function branchPackages(Request $request)
     {
-        $packages = package::where('branch',$request->id)->get();
+        $packages = Package::where('branch',$request->id)->get();
         return response()->json($packages);
     }
 }

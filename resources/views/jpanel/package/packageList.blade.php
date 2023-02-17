@@ -1,6 +1,6 @@
 @extends('jpanel.layouts.app')
 @section('title')
-package List
+Package List
 @endsection
 
 @section('content')
@@ -9,7 +9,7 @@ package List
     <div class="container-fluid">
         <div class="row mb-2 flash-message">
             <div class="col-sm-3">
-                <h1>package List</h1>
+                <h1>Package List</h1>
             </div>
             <div class="col-6 messageArea">
                 @include('jpanel/flash-message')
@@ -17,7 +17,7 @@ package List
             <div class="col-sm-3">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">package List</li>
+                    <li class="breadcrumb-item active">Package List</li>
                 </ol>
             </div>
         </div>
@@ -54,7 +54,7 @@ package List
                                 <tr>
                                     <th>#</th>
                                     <th>Branch</th>
-                                    <th>Name</th>
+                                    <th>Package Name</th>
                                     <th>Service</th>
                                     <th>Times</th>
                                     <th>Total (AED)</th>
@@ -86,7 +86,7 @@ package List
                                 <tr>
                                     <th>#</th>
                                     <th>Branch</th>
-                                    <th>Name</th>
+                                    <th>Package Name</th>
                                     <th>Service</th>
                                     <th>Times</th>
                                     <th>Total (AED)</th>

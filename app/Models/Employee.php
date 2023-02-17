@@ -10,9 +10,9 @@ class Employee extends Model
     use HasFactory;
 
     public function services(){
-        return $this->hasOne(services::class,'id','service');
+        return $this->hasOne(Services::class,'id','service');
     }
     public function branches(){
-        return $this->hasOne(branch::class,'id','branch');
+        return $this->hasOne(Branch::class,'id','branch');
     }
 }

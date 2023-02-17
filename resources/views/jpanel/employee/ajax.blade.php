@@ -115,5 +115,32 @@
                 }
             });
         })
+
+        // STATUS CHANGE 
+        $(".commissionStatus").on('change.bootstrapSwitch', function(e) {
+            let status = $(this).prop('checked') == true ? 1 : 0;
+            let commission_id = $(this).data('id');
+            $.ajax({
+                headers: {
+                    'X-CSRF-Token': '{{ csrf_token() }}',
+                },
+                type: "POST",
+                dataType: "json",
+                url: '{{ route('status.change.commission') }}',
+                data: {
+                    'status': status,
+                    'id': commission_id
+                },
+                success: function(data) {
+                    if (data.status == "success") {
+                        var selector = ".flash-message .messageArea";
+                        var message_status = data.status;
+                        var message_data = data.message;
+                        alertMessage(selector, message_status, message_data);
+                        location.reload();
+                    }
+                }
+            });
+        })
     });
 </script>

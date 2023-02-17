@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class EmployeeCommission extends Model
 {
     use HasFactory;
-    public function branchDetails(){
-        return $this->hasOne(branch::class,'id','branch_id');
+    public function appointment(){
+        return $this->hasOne(Booking::class,'id','appointment_id');
     }
 }

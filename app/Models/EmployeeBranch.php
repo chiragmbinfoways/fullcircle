@@ -9,6 +9,6 @@ class EmployeeBranch extends Model
 {
     use HasFactory;
     public function branchDetails(){
-        return $this->hasOne(branch::class,'id','branch_id');
+        return $this->hasOne(Branch::class,'id','branch_id');
     }
 }

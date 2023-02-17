@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\jpanel\booking\BookingController;
+use App\Http\Controllers\Jpanel\booking\BookingController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['auth']], function () {

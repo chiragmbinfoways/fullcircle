@@ -7,23 +7,23 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\Module;
 use App\Models\Language;
-use App\Models\services;
-use App\Models\booking;
-use App\Models\customer;
-use App\Models\package;
-use App\Models\customerPackage;
+use App\Models\Services;
+use App\Models\Booking;
+use App\Models\Customer;
+use App\Models\Package;
+use App\Models\CustomerPackage;
 use App\Models\EmployeeService;
 use App\Models\EmployeeBranch;
-use App\Models\branch;
+use App\Models\Branch;
 use App\Models\Employee;
-use App\Models\customerAppointment;
+use App\Models\CustomerAppointment;
 use Carbon\Carbon;
 class DashboardController extends Controller
 {
    
     public function index()
     {
-        $bookings = booking::all();
+        $bookings = Booking::all();
         if (!blank($bookings)) {
             foreach ($bookings as $booking){
             $events[] = [
@@ -50,8 +50,8 @@ class DashboardController extends Controller
             $resources= [];
         }
         $branch_name = "Select Branch";
-        $customers = customer::all();
-        $branches = branch::all();
+        $customers = Customer::all();
+        $branches = Branch::all();
         $employees = Employee::all();
         $employee_name = "Select Employee";
         return view('jpanel.dashboard',['bookings'=> $events,'resources'=>$resources, 'customers'=>$customers,'branches'=>$branches,'branch_name'=>$branch_name,'employee_name'=>$employee_name,'employees'=>$employees]);
@@ -66,7 +66,7 @@ class DashboardController extends Controller
             'branch' => 'required',
 
         ]);
-        $book = new booking();
+        $book = new Booking();
         $book->customer_id = $request->customer ;
         $book->package_id = $request->package;
         $book->employee_id = $request->emp;
@@ -78,12 +78,12 @@ class DashboardController extends Controller
         $endtime =  Carbon::parse($request->stime)->addMinutes($timeinterval)->format('H:i');
         $book->etime =$endtime;
          // customer package id
-         $customer_appointments = customerAppointment::where('customerPack_id', $request->package)->where('appointment_taken', "0")->get()->first();
+         $customer_appointments = CustomerAppointment::where('customerPack_id', $request->package)->where('appointment_taken', "0")->get()->first();
         if ($customer_appointments) {
         $customer_packageId = $customer_appointments->id;
         $book->save();
         // customer appointment 
-        $customer_appointments = customerAppointment::where('id', $customer_packageId)->update(['Appointment_date' => $request->bookingDate,'booking_id' => $book->id,'time' => $request->stime. "-".$endtime,'Trainer' => $request->emp,'appointment_taken' => "1"]);
+        $customer_appointments = CustomerAppointment::where('id', $customer_packageId)->update(['Appointment_date' => $request->bookingDate,'booking_id' => $book->id,'time' => $request->stime. "-".$endtime,'Trainer' => $request->emp,'appointment_taken' => "1"]);
         return response()->json(['success' => 'true']);
     }
     else{
@@ -104,9 +104,9 @@ class DashboardController extends Controller
     public function packageData(Request $request)
     {
         $id = $request->id;
-        $packages = customerPackage::where('customer_id', $id)->get();
+        $packages = CustomerPackage::where('customer_id', $id)->get();
         foreach ($packages as  $package) {
-           $package_available = customerAppointment::where('customerPack_id',$package->id)->where('appointment_taken', '0')->first();
+           $package_available = CustomerAppointment::where('customerPack_id',$package->id)->where('appointment_taken', '0')->first();
            if ($package_available) {
             $packages_array[] = $package;
            }
@@ -116,10 +116,10 @@ class DashboardController extends Controller
     // Employee Data
     public function employeeData(Request $request)
     {
-        $packages = customerPackage::where('id',$request->id)->get()->first();
-        $package = package::where('id',$packages->package_id)->get()->first();
+        $packages = CustomerPackage::where('id',$request->id)->get()->first();
+        $package = Package::where('id',$packages->package_id)->get()->first();
         $service_id =$package->service;
-        $Service_time = services::where('id',$service_id)->first();
+        $Service_time = Services::where('id',$service_id)->first();
         $Service_time = $Service_time->time;
         $branchEmployees = EmployeeBranch:: where('branch_id',$request->branch_id)->get();
         foreach ($branchEmployees as $branchEmployee ){
@@ -141,20 +141,21 @@ class DashboardController extends Controller
 
     public function edit($id)
     {
-        $booking = booking::where('id',$id)->get()->first();
-        $branches = branch::all();
-        $packages = customerPackage::where('customer_id', $booking->customer_id)->get();
+        $booking = Booking::where('id',$id)->get()->first();
+        $branches = Branch::all();
+        $packages = CustomerPackage::where('customer_id', $booking->customer_id)->get();
+        $packages_array=[];
         foreach ($packages as  $package) {
-           $package_available = customerAppointment::where('customerPack_id',$package->id)->where('appointment_taken', '0')->first();
-           if ($package_available) {
+           $package_available = CustomerAppointment::where('customerPack_id',$package->id)->where('appointment_taken', '0')->first();
+           if (!blank($package_available)) {
             $packages_array[] = $package;
            }
         }
         // Employees for services 
-        $packages = customerPackage::where('id',$booking->package_id)->get()->first();
-        $package = package::where('id',$packages->package_id)->get()->first();
+        $packages = CustomerPackage::where('id',$booking->package_id)->get()->first();
+        $package = Package::where('id',$packages->package_id)->get()->first();
         $service_id =$package->service;
-        $Service_time = services::where('id',$service_id)->first();
+        $Service_time = Services::where('id',$service_id)->first();
         $Service_time = $Service_time->time;
         $employees = EmployeeService::where('service_id', $service_id)->get();
         return view('jpanel.booking.bookingEdit',['booking'=>$booking,'packages'=>$packages_array,'service_time'=>$Service_time,'employees'=>$employees,'branches'=>$branches]);
@@ -171,7 +172,7 @@ class DashboardController extends Controller
             'stime' => 'required',
         ]);
             $endtime =  Carbon::parse($request->stime)->addMinutes($request->time)->format('H:i');
-            $bookingUpdate = booking::where('id', $id)
+            $bookingUpdate = Booking::where('id', $id)
             ->update(['customer_id' => $request->customer,
                     'package_id' => $request->package,
                     'employee_id' => $request->emp,
@@ -179,7 +180,7 @@ class DashboardController extends Controller
                     'day' => $request->day,
                     'stime' => $request->stime,
                     'etime' => $endtime]); 
-            $customerAppointmentUpdate = customerAppointment::where('booking_id', $id)
+            $customerAppointmentUpdate = CustomerAppointment::where('booking_id', $id)
             ->update(['customerPack_id' => $request->package,
                     'Appointment_date' => $request->date,
                     'time' => $request->stime ."-". $endtime ,
@@ -192,12 +193,12 @@ class DashboardController extends Controller
     {
         $day = Carbon::parse($request->date)->format('l');
         if($request->employee_id == null){
-        $bookingUpdate = booking::where('id', $request->id)->update(['booking_date' => $request->date,'day'=>$day, 'stime'=>$request->startTime,'etime'=>$request->endTime]); 
-        $customerAppointmentUpdate = customerAppointment::where('booking_id', $request->id)->update(['Appointment_date' => $request->date, 'time'=> $request->startTime."-".$request->endTime]); 
+        $bookingUpdate = Booking::where('id', $request->id)->update(['booking_date' => $request->date,'day'=>$day, 'stime'=>$request->startTime,'etime'=>$request->endTime]); 
+        $customerAppointmentUpdate = CustomerAppointment::where('booking_id', $request->id)->update(['Appointment_date' => $request->date, 'time'=> $request->startTime."-".$request->endTime]); 
         return response()->json(['status' => 'success', 'message' => 'Status has been changed successfully!']);
         }
-        $bookingUpdate = booking::where('id', $request->id)->update(['booking_date' => $request->date,'day'=>$day, 'stime'=>$request->startTime,'etime'=>$request->endTime,'employee_id'=>$request->employee_id]); 
-        $customerAppointmentUpdate = customerAppointment::where('booking_id', $request->id)->update(['Appointment_date' => $request->date, 'time'=> $request->startTime."-".$request->endTime, 'Trainer'=>$request->employee_id]); 
+        $bookingUpdate = Booking::where('id', $request->id)->update(['booking_date' => $request->date,'day'=>$day, 'stime'=>$request->startTime,'etime'=>$request->endTime,'employee_id'=>$request->employee_id]); 
+        $customerAppointmentUpdate = CustomerAppointment::where('booking_id', $request->id)->update(['Appointment_date' => $request->date, 'time'=> $request->startTime."-".$request->endTime, 'Trainer'=>$request->employee_id]); 
         return response()->json(['status' => 'success', 'message' => 'Status has been changed successfully!']);
     }
 
@@ -205,8 +206,8 @@ class DashboardController extends Controller
 
     public function delete(Request $request)
     {
-        $booking = booking::where('id', $request->id)->get()->first();
-        $customerAppointment = customerAppointment::where('booking_id',$request->id)->first();
+        $booking = Booking::where('id', $request->id)->get()->first();
+        $customerAppointment = CustomerAppointment::where('booking_id',$request->id)->first();
         $customerAppointment->booking_id = "-";
         $customerAppointment->Appointment_date = "-";
         $customerAppointment->time = "-";
@@ -221,7 +222,7 @@ class DashboardController extends Controller
     // Branch Filter for calender
     public function branchFilter(Request $request )
     {
-        $bookings = booking::where('branch', $request->branchFilter)->get();
+        $bookings = Booking::where('branch', $request->branchFilter)->get();
         if (!blank($bookings)) {
             foreach ($bookings as $booking){
                 $events[] = [
@@ -247,10 +248,10 @@ class DashboardController extends Controller
             $events=[];
             $resources =[];
         }
-        $branch_name = branch::where('id',$request->branchFilter)->first();
+        $branch_name = Branch::where('id',$request->branchFilter)->first();
         $branch_name = $branch_name->name;
-        $customers = customer::all();
-        $branches = branch::all();
+        $customers = Customer::all();
+        $branches = Branch::all();
         $employees = Employee::all();
         $employee_name = "Select Employee";
         return view('jpanel.dashboard',['bookings'=> $events,'resources'=>$resources, 'customers'=>$customers,'branches'=>$branches,'branch_name'=>$branch_name, 'employee_name'=>$employee_name,'employees'=>$employees]);
@@ -259,10 +260,10 @@ class DashboardController extends Controller
     public function employeeFilter(Request $request )
     {
         if ($request->employeeFilter== "All") {
-        $bookings = booking::all();
+        $bookings = Booking::all();
         }
         else{
-        $bookings = booking::where('employee_id', $request->employeeFilter)->get();
+        $bookings = Booking::where('employee_id', $request->employeeFilter)->get();
         }
         if (!blank($bookings)) {
             foreach ($bookings as $booking){
@@ -296,8 +297,8 @@ class DashboardController extends Controller
         $employee_name = Employee::where('id',$request->employeeFilter)->first();
         $employee_name = $employee_name->fname." ".$employee_name->lname;
         }
-        $customers = customer::all();
-        $branches = branch::all();
+        $customers = Customer::all();
+        $branches = Branch::all();
         $employees = Employee::all();
         $branch_name = "Select Branch";
         return view('jpanel.dashboard',['bookings'=> $events,'resources'=>$resources, 'customers'=>$customers,'branches'=>$branches,'branch_name'=>$branch_name, 'employee_name'=>$employee_name,'employees'=>$employees]);

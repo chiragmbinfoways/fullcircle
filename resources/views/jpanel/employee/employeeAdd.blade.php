@@ -111,7 +111,7 @@
                                         <label for="title">Gender</label>
                                         <div class="form-group d-flex">
                                             <div class="form-check mr-3">
-                                                <input class="form-check-input @error('gender') is-invalid @enderror" type="radio" name="gender" value="M">
+                                                <input class="form-check-input @error('gender') is-invalid @enderror" checked type="radio" name="gender" value="M">
                                                 <label class="form-check-label">Male</label>
                                               </div>
                                             <div class="form-check">
